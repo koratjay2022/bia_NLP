@@ -1,6 +1,5 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler,LabelEncoder
-from sklearn.neighbors import LocalOutlierFactor
 from sklearn.metrics import accuracy_score, r2_score
 from sklearn.base import is_classifier, is_regressor
 
@@ -49,7 +48,65 @@ class common_Fucnation :
         upper_bound = Q3 + (threshold * IQR)
         data = data[(data[column] >= lower_bound) & (data[column] <= upper_bound)]
         return data
+import re
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+
+# # Download necessary NLTK data
+# nltk.download('punkt')
+# nltk.download('stopwords')
+# nltk.download('wordnet')
+
+class TextPreprocessor:
+    def __init__(self):
+        # Initialize stopwords and lemmatizer
+        self.stop_words = set(stopwords.words('english'))
+        self.lemmatizer = WordNetLemmatizer()
+
+    def lowercase(self, text):
+        return text.lower()
+
+    def remove_punctuation_and_numbers(self, text):
+        return re.sub(r'[^a-z\s]', '', text)
+
+    def tokenize(self, text):
+        return word_tokenize(text)
+
+    def remove_stopwords(self, tokens):
+        return [word for word in tokens if word not in self.stop_words]
+
+    def lemmatize(self, tokens):
+        return [self.lemmatizer.lemmatize(token) for token in tokens]
+
+    def preprocess(self, text):
+        # Step 1: Convert text to lowercase
+        text = self.lowercase(text)
         
+        # Step 2: Remove punctuation and numbers
+        text = self.remove_punctuation_and_numbers(text)
+        
+        # Step 3: Tokenize the text
+        tokens = self.tokenize(text)
+        
+        # Step 4: Remove stopwords
+        tokens = self.remove_stopwords(tokens)
+        
+        # Step 5: Lemmatize the tokens
+        tokens = self.lemmatize(tokens)
+        
+        # Join the tokens back into a single string
+        cleaned_text = ' '.join(tokens)
+        
+        return cleaned_text
+#
+# Example usage
+#preprocessor = TextPreprocessor()
+#sample_text = "This is another example sentence, with more numbers 456 and punctuation!"
+#cleaned = preprocessor.preprocess(sample_text)
+#print(cleaned)
+
 def train_and_evaluate_model(model, X_train, X_test, y_train, y_test):
     model.fit(X_train, y_train)
     
